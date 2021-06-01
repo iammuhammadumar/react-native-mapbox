@@ -15,13 +15,13 @@ class Page extends React.Component {
   render() {
     return (
       <View style={sheet.matchParent}>
-        <MapHeader
+        {/* <MapHeader
           backgroundColor={colors.primary.pink}
           statusBarColor={colors.primary.pinkDark}
           statusBarTextTheme={'light-content'}
           label={this.props.label}
           onBack={this.props.onDismissExample}
-        />
+        /> */}
 
         {this.props.children}
       </View>

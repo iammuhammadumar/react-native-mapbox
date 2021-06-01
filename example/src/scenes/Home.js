@@ -3,6 +3,8 @@ import {View, Text, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
 import {Icon} from 'react-native-elements';
 import PropTypes from 'prop-types';
 
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
+
 import Page from '../examples/common/Page';
 import MapHeader from '../examples/common/MapHeader';
 import sheet from '../styles/sheet';
@@ -204,14 +206,25 @@ function ExampleGroupComponent({items, navigation, showBack}) {
 
   return (
     <View style={sheet.matchParent}>
-      <MapHeader label={title} {...back} />
-      <View style={sheet.matchParent}>
-        <FlatList
-          style={styles.exampleList}
-          data={items}
-          keyExtractor={(item) => item.label}
-          renderItem={renderItem}
-        />
+      {/* <MapHeader label={title} {...back} /> */}
+
+      <View style={{ width: '100%', position: 'absolute', marginTop: 20, padding: 30, top:20,  }}>
+  <GooglePlacesAutocomplete
+      placeholder='Search'
+      onPress={(data, details = null) => {
+        // 'details' is provided when fetchDetails = true
+        console.log(data, details);
+      }}
+      query={{
+        key: 'YOUR API KEY',
+        language: 'en',
+      }}
+    />
+    
+    </View>
+
+      <View style={{flex:1 , marginTop:150}}>
+      <ShowMap/>
       </View>
     </View>
   );
@@ -226,11 +239,28 @@ class Home extends React.Component {
     const {navigation} = this.props;
     const items = navigation.getParam('items') || Examples;
     return (
-      <ExampleGroupComponent
-        items={items}
-        navigation={navigation}
-        showBack={!!navigation.getParam('items')}
-      />
+      <View style={sheet.matchParent}>
+      {/* <MapHeader label={title} {...back} /> */}
+
+      <View style={{ width: '100%', position: 'absolute', marginTop: 20, padding: 30, top:20,  }}>
+  <GooglePlacesAutocomplete
+      placeholder='Search'
+      onPress={(data, details = null) => {
+        // 'details' is provided when fetchDetails = true
+        console.log(data, details);
+      }}
+      query={{
+        key: 'YOUR API KEY',
+        language: 'en',
+      }}
+    />
+    
+    </View>
+
+      <View style={{flex:1 , marginTop:150}}>
+      <ShowMap/>
+      </View>
+    </View>
     );
   }
 }
