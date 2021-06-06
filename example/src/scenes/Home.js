@@ -1,8 +1,9 @@
 import React from 'react';
 import {View, Text, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
+import axios from 'axios';
 import {Icon} from 'react-native-elements';
 import PropTypes from 'prop-types';
-
+// import {PopulartimesAPI} from "../utils/places"
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
 
 import Page from '../examples/common/Page';
@@ -235,6 +236,39 @@ class Home extends React.Component {
     navigation: PropTypes.shape({navigate: PropTypes.func}),
   };
 
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      locationDetails: {},
+      isPress: false,
+      busyHours: '',
+    };
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if(this.state.isPress){
+      console.log("Oyeee hoyeeee...")
+      this.setState({...this.state, isPress: false})
+      this.fetchData(this.state.locationDetails.place_id);
+    }
+  }
+
+  async fetchData(placeId) {
+    const baseUrl = "http://localhost:8000";
+    const apiKey = "AIzaSyC94Sw7zn-GrVTnrXpL2shARAncAR8z5UA";
+    const url = `${baseUrl}/busy-hours?apiKey=${apiKey}&placeId=${placeId}&dataType=today`;
+    const response = await axios.get(url);
+    this.setState({...this.state, busyHours:response.data.data.reduce((accumulator, currentValue, currentIndex, array) => {
+        return accumulator + currentValue
+      }, 10)/24})
+    console.log(response.data.data.reduce((accumulator, currentValue, currentIndex, array) => {
+      return accumulator + currentValue
+    }, 10)/24,"==========");
+
+  }
+
   render() {
     const {navigation} = this.props;
     const items = navigation.getParam('items') || Examples;
@@ -246,11 +280,17 @@ class Home extends React.Component {
   <GooglePlacesAutocomplete
       placeholder='Search'
       onPress={(data, details = null) => {
+        console.log('dsjaskdjaldkjlkajsdlkajsdkjasd')
         // 'details' is provided when fetchDetails = true
-        console.log(data, details);
+
+        // console.log(details)
+        // this.fetchData(details?.place_id);
+        this.setState({...this.state, locationDetails: details, isPress: true});
+        // console.log(details);
       }}
+      fetchDetails
       query={{
-        key: 'YOUR API KEY',
+        key: 'AIzaSyC94Sw7zn-GrVTnrXpL2shARAncAR8z5UA',
         language: 'en',
       }}
     />
@@ -258,7 +298,14 @@ class Home extends React.Component {
     </View>
 
       <View style={{flex:1 , marginTop:150}}>
-      <ShowMap/>
+        <Heatmap
+            place={this.state.locationDetails}
+            busyHours={this.state.busyHours}
+        />
+      {/*<ShowMap/>*/}
+      {/*<MarkerView*/}
+      {/*place={this.state.locationDetails}*/}
+      {/*/>*/}
       </View>
     </View>
     );

@@ -38,9 +38,10 @@ class ShowMarkerView extends React.Component {
     ...BaseExamplePropTypes,
   };
 
+
+
   constructor(props) {
     super(props);
-
     this.state = {
       backgroundColor: 'blue',
       coordinates: [
@@ -48,7 +49,19 @@ class ShowMarkerView extends React.Component {
         [-73.99155, 40.73681],
       ],
     };
+
   }
+
+  componentDidUpdate(prevProps, prevState) {
+
+    if(prevProps.place !== this.props.place){
+      console.log(Object.values(this.props?.place?.geometry?.location), "=========")
+      this.setState({...this.state, coordinates: [Object.values(this.props.place.geometry.location).reverse()]})
+    }
+
+  }
+
+
 
   render() {
     return (
@@ -70,7 +83,7 @@ class ShowMarkerView extends React.Component {
           </MapboxGL.PointAnnotation>
 
           <MapboxGL.MarkerView coordinate={this.state.coordinates[0]}>
-            <AnnotationContent title={'this is a marker view'} />
+            {/*<AnnotationContent title={'this is a marker view'} />*/}
           </MapboxGL.MarkerView>
         </MapboxGL.MapView>
 
