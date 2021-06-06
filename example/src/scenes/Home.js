@@ -1,11 +1,11 @@
 import React from 'react';
-import {View, Text, FlatList, StyleSheet, TouchableOpacity} from 'react-native';
+import {View, Text, FlatList, StyleSheet, TouchableOpacity, TextInput} from 'react-native';
 import axios from 'axios';
 import {Icon} from 'react-native-elements';
 import PropTypes from 'prop-types';
 // import {PopulartimesAPI} from "../utils/places"
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete';
-
+import { getResults } from '../utils/search-helper'
 import Page from '../examples/common/Page';
 import MapHeader from '../examples/common/MapHeader';
 import sheet from '../styles/sheet';
@@ -74,6 +74,11 @@ const styles = StyleSheet.create({
   },
   exampleListLabel: {
     fontSize: 18,
+  },
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 1,
   },
 });
 
@@ -244,7 +249,23 @@ class Home extends React.Component {
       locationDetails: {},
       isPress: false,
       busyHours: '',
+      uery: '',
+      queryResults: ''
     };
+  }
+
+  onChangeText = (text)=> {
+    this.setState({...this.state, query: text})
+    this.sendQuery();
+  }
+  async sendQuery () {
+    try {
+      const queryResults = await getResults(this.state.query);
+      if (queryResults.error) throw Error(queryResults.error)
+      this.setState({...this.state, queryResults: queryResults.response.features})
+    } catch (e) {
+      console.log('error')
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -294,10 +315,14 @@ class Home extends React.Component {
         language: 'en',
       }}
     />
-    
+        <TextInput
+        style={styles.input}
+        onChangeText={this.onChangeText}
+        value={this.state.query}
+        />
     </View>
 
-      <View style={{flex:1 , marginTop:150}}>
+      <View style={{flex:1 , marginTop:250}}>
         <Heatmap
             place={this.state.locationDetails}
             busyHours={this.state.busyHours}
